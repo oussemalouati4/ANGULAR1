@@ -1,0 +1,186 @@
+<div class="document-list-container">
+  <div class="list-header">
+    <h1>Gestion des Documents</h1>
+    <p>Recherchez, filtrez et gérez vos documents</p>
+  </div>
+
+  <!-- Barre de recherche et filtres -->
+  <div class="search-filters">
+    <mat-card>
+      <mat-card-content>
+        <div class="search-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Rechercher des documents...</mat-label>
+            <input matInput [formControl]="searchControl" placeholder="Titre, description, tags...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <div class="filter-controls">
+            <mat-form-field appearance="outline">
+              <mat-label>Catégorie</mat-label>
+              <mat-select (selectionChange)="onFilterChange({category: $event.value})">
+                <mat-option value="">Toutes les catégories</mat-option>
+                <mat-option *ngFor="let cat of categories" [value]="cat.id">
+                  {{ cat.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Trier par</mat-label>
+              <mat-select [(value)]="sortBy" (selectionChange)="onSortChange()">
+                <mat-option value="date">Date</mat-option>
+                <mat-option value="title">Titre</mat-option>
+                <mat-option value="size">Taille</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-icon-button (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; onSortChange()" 
+                    [attr.aria-label]="'Ordre: ' + (sortOrder === 'asc' ? 'croissant' : 'décroissant')">
+              <mat-icon>{{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+            </button>
+
+            <button mat-icon-button (click)="toggleViewMode()" 
+                    [attr.aria-label]="'Vue: ' + (viewMode === 'grid' ? 'grille' : 'liste')">
+              <mat-icon>{{ viewMode === 'grid' ? 'view_list' : 'view_module' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Liste des documents -->
+  <div class="documents-container">
+    <div [ngClass]="'documents-' + viewMode" *ngIf="documents$ | async as documents">
+      
+      <!-- Vue grille -->
+      <div *ngIf="viewMode === 'grid'" class="document-grid">
+        <mat-card *ngFor="let doc of documents" class="document-card">
+          <div class="card-header">
+            <div class="file-icon">
+              <mat-icon [style.color]="doc.category.color">{{ getFileIcon(doc.mimeType) }}</mat-icon>
+            </div>
+            <div class="card-actions">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="previewDocument(doc)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Aperçu</span>
+                </button>
+                <button mat-menu-item (click)="downloadDocument(doc)">
+                  <mat-icon>download</mat-icon>
+                  <span>Télécharger</span>
+                </button>
+                <button mat-menu-item (click)="deleteDocument(doc)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Supprimer</span>
+                </button>
+              </mat-menu>
+            </div>
+          </div>
+          
+          <mat-card-content>
+            <h3>{{ doc.title }}</h3>
+            <p class="description">{{ doc.description || 'Aucune description' }}</p>
+            
+            <div class="document-meta">
+              <div class="meta-item">
+                <mat-icon>folder</mat-icon>
+                <span>{{ doc.category.name }}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>storage</mat-icon>
+                <span>{{ formatFileSize(doc.fileSize) }}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ doc.uploadDate | date:'short' }}</span>
+              </div>
+            </div>
+            
+            <div class="tags">
+              <mat-chip *ngFor="let tag of doc.tags">{{ tag }}</mat-chip>
+            </div>
+            
+            <div class="status">
+              <mat-chip [style.background-color]="doc.status.color" [style.color]="'white'">
+                {{ doc.status.name }}
+              </mat-chip>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Vue liste -->
+      <div *ngIf="viewMode === 'list'" class="document-list">
+        <mat-card>
+          <mat-card-content>
+            <div class="list-item" *ngFor="let doc of documents">
+              <div class="item-icon">
+                <mat-icon [style.color]="doc.category.color">{{ getFileIcon(doc.mimeType) }}</mat-icon>
+              </div>
+              
+              <div class="item-content">
+                <div class="item-main">
+                  <h4>{{ doc.title }}</h4>
+                  <p>{{ doc.description || 'Aucune description' }}</p>
+                </div>
+                
+                <div class="item-meta">
+                  <span class="category">{{ doc.category.name }}</span>
+                  <span class="size">{{ formatFileSize(doc.fileSize) }}</span>
+                  <span class="date">{{ doc.uploadDate | date:'short' }}</span>
+                  <mat-chip [style.background-color]="doc.status.color" [style.color]="'white'">
+                    {{ doc.status.name }}
+                  </mat-chip>
+                </div>
+                
+                <div class="item-tags">
+                  <mat-chip *ngFor="let tag of doc.tags">{{ tag }}</mat-chip>
+                </div>
+              </div>
+              
+              <div class="item-actions">
+                <button mat-icon-button (click)="previewDocument(doc)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button (click)="downloadDocument(doc)">
+                  <mat-icon>download</mat-icon>
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="listMenu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #listMenu="matMenu">
+                  <button mat-menu-item (click)="deleteDocument(doc)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Supprimer</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Message si aucun document -->
+      <div *ngIf="documents.length === 0" class="no-documents">
+        <mat-card>
+          <mat-card-content>
+            <div class="empty-state">
+              <mat-icon>folder_open</mat-icon>
+              <h3>Aucun document trouvé</h3>
+              <p>Essayez de modifier vos critères de recherche ou uploadez votre premier document.</p>
+              <button mat-raised-button color="primary" routerLink="/upload">
+                <mat-icon>cloud_upload</mat-icon>
+                Uploader un document
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

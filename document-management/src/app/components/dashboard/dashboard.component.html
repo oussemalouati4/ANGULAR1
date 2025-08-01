@@ -1,0 +1,127 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Tableau de Bord</h1>
+    <p>Vue d'ensemble de votre système de gestion documentaire</p>
+  </div>
+
+  <!-- Statistiques principales -->
+  <div class="stats-grid" *ngIf="stats$ | async as stats">
+    <mat-card class="stat-card documents">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>folder</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.totalDocuments }}</h3>
+          <p>Documents totaux</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card storage">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>storage</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.totalSize }}</h3>
+          <p>Espace utilisé</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card uploads">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>cloud_upload</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.recentUploads }}</h3>
+          <p>Uploads récents</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card categories">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>category</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.categoriesCount }}</h3>
+          <p>Catégories</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Documents récents -->
+  <div class="recent-documents">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Documents Récents</mat-card-title>
+        <mat-card-subtitle>Derniers documents ajoutés ou modifiés</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="documents-list" *ngIf="recentDocuments$ | async as documents">
+          <div class="document-item" *ngFor="let doc of documents.slice(0, 5)">
+            <div class="document-icon">
+              <mat-icon [style.color]="doc.category.color">{{ getFileIcon(doc.mimeType) }}</mat-icon>
+            </div>
+            <div class="document-info">
+              <h4>{{ doc.title }}</h4>
+              <p>{{ doc.description || 'Aucune description' }}</p>
+              <div class="document-meta">
+                <span class="file-size">{{ formatFileSize(doc.fileSize) }}</span>
+                <span class="upload-date">{{ doc.uploadDate | date:'short' }}</span>
+                <mat-chip [style.background-color]="doc.status.color" [style.color]="'white'">
+                  {{ doc.status.name }}
+                </mat-chip>
+              </div>
+            </div>
+            <div class="document-actions">
+              <button mat-icon-button>
+                <mat-icon>download</mat-icon>
+              </button>
+              <button mat-icon-button>
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button>
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="quick-actions">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Actions Rapides</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="actions-grid">
+          <button mat-raised-button color="primary" routerLink="/upload">
+            <mat-icon>cloud_upload</mat-icon>
+            Uploader un document
+          </button>
+          <button mat-raised-button color="accent" routerLink="/documents">
+            <mat-icon>search</mat-icon>
+            Rechercher des documents
+          </button>
+          <button mat-raised-button routerLink="/categories">
+            <mat-icon>category</mat-icon>
+            Gérer les catégories
+          </button>
+          <button mat-raised-button routerLink="/reports">
+            <mat-icon>assessment</mat-icon>
+            Voir les rapports
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

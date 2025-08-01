@@ -1,0 +1,211 @@
+.upload-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.upload-header {
+  margin-bottom: 32px;
+  text-align: center;
+  
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #1976d2;
+  }
+  
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 1.1rem;
+  }
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.drop-zone {
+  .drop-content {
+    text-align: center;
+    padding: 48px 24px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    mat-icon {
+      font-size: 72px;
+      width: 72px;
+      height: 72px;
+      color: #1976d2;
+      margin-bottom: 16px;
+    }
+    
+    h3 {
+      margin: 0 0 8px 0;
+      color: #333;
+    }
+    
+    p {
+      margin: 0 0 24px 0;
+      color: #666;
+    }
+  }
+  
+  &.drag-over .drop-content {
+    border-color: #1976d2;
+    background-color: #f3f8ff;
+    
+    mat-icon {
+      color: #1976d2;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.selected-files {
+  .file-list {
+    .file-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .file-icon {
+        margin-right: 16px;
+        
+        mat-icon {
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+          color: #1976d2;
+        }
+      }
+      
+      .file-info {
+        flex: 1;
+        
+        h4 {
+          margin: 0 0 4px 0;
+          font-size: 1rem;
+          font-weight: 500;
+        }
+        
+        p {
+          margin: 0;
+          color: #666;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}
+
+.metadata-form {
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    
+    .full-width {
+      width: 100%;
+    }
+    
+    .half-width {
+      flex: 1;
+    }
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    
+    button {
+      min-width: 120px;
+    }
+  }
+}
+
+.upload-progress {
+  .progress-list {
+    .progress-item {
+      margin-bottom: 16px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .progress-info {
+        h4 {
+          margin: 0 0 8px 0;
+          font-size: 1rem;
+          font-weight: 500;
+        }
+        
+        .progress-status {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          
+          mat-progress-bar {
+            flex: 1;
+          }
+          
+          .progress-text {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9rem;
+            color: #666;
+            min-width: 60px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .upload-container {
+    padding: 16px;
+  }
+  
+  .upload-header h1 {
+    font-size: 2rem;
+  }
+  
+  .drop-content {
+    padding: 32px 16px !important;
+    
+    mat-icon {
+      font-size: 48px !important;
+      width: 48px !important;
+      height: 48px !important;
+    }
+  }
+  
+  .form-row {
+    flex-direction: column;
+    
+    .half-width {
+      width: 100%;
+    }
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
